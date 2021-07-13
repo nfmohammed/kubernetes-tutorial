@@ -1,0 +1,46 @@
+# mongodb deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deployment
+  labels:
+    app: mongodb
+spec: # pod configuration
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec: # container configuration
+      containers:
+      - name: mongodb
+        image: mongo
+        ports:
+        - containerPort: 27017
+        env: 
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom: 
+            secretKeyRef:
+              name: mongodb-secret #file name
+              key: mongo-root-username #field name
+        - name: MONGO_INITDB_ROOT_PASSWORD  
+          valueFrom: 
+            secretKeyRef:
+                name: mongodb-secret #file-name
+                key: mongo-root-password #field-name
+---
+# Create internal service for mongodb
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb #pod label that this internal service needs to connect to
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
