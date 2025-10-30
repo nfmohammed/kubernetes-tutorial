@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+
+spec:
+  type: NodePort
+  # ports is an array
+  ports:
+  # first port mapping
+  # port on service
+    - port: 80
+      # targetPort on container
+      targetPort: 80
+      # port on host/node, this is reserved port
+      nodePort: 30004
+  # this nodeport service selects the container with the following label
+  selector:
+    app: myapp
